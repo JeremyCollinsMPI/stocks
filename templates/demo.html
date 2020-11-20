@@ -1,0 +1,94 @@
+  <html>
+<p align="left">A model for predicting stock prices, trained on data from the stocks in the list on the right for the years 2017-2018,
+and tested on the same stocks for the year 2019.</p>
+<p align="left">The model buys the stock on a day when the predicted opening price for the following day is above the current opening price.
+It then sells at the opening price the following day.</p>
+<p align="left">The returns are plotted for each stock, assuming a trading fee of 0.03%.  The total return for all stocks tested is 159%. </p>
+  <form action="" method="post" role="form">
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+    
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var dict = {{dict | tojson}}
+        var array = dict.array
+        var data = google.visualization.arrayToDataTable(array);
+
+        var options = {
+          title: '{{moose}}',
+          curveType: 'function',
+          legend: { position: 'bottom' },
+          chartArea: {left: 100}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        chart.draw(data, options);
+      }
+    </script>
+
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 30%;
+  float: right;
+  margin-top:5%;
+  margin-right: 5%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+
+}
+</style>
+
+  </head>
+
+  <body>
+  <div class="form-group">
+      <label for="name">Search term:</label>
+<input type="text" class="form-control" id="name" name="name" autocomplete="off">
+
+</div>
+
+    <div id="curve_chart" style="width: 1000px; height: 500px; float: left"></div>
+    <body>
+	
+
+<table>
+
+  <tr>
+    <th>Stock</th>
+    <th>Total return in 2019 (%)</th>
+  </tr>
+  {% for member in sorted_stocks %}
+    <tr>
+    <td>{{member[0]}}</td>
+    <td>{{member[1]}}</td>
+  </tr>
+{% endfor %}
+<!-- 
+  <tr>
+    <td>AAPL</td>
+    <td>110%</td>
+  </tr>
+  <tr>
+    <td>MSFT</td>
+    <td>105%</td>
+  </tr>
+ -->
+</table>
+
+  </body>
+</html>
