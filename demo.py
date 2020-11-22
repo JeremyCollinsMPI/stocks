@@ -35,7 +35,10 @@ def s(sorted_stocks = None, company = None):
     print('****')
     print(company)
     company = company.upper()
-
+    if company + '.csv' in os.listdir('/bbc'):
+        template = 'demo_with_finbert.html'
+    else:
+        template = 'demo.html'
     sorted_stocks = get_sorted_stocks()
     
     table = pd.read_csv('demo/'+company+'.csv', sep='\t', na_values='NaN')
@@ -45,8 +48,19 @@ def s(sorted_stocks = None, company = None):
     for index, row in table.iterrows():
       array.append(row.to_list())
     dict = {'array': array}
+    finbert_table = None
+    if company + '.csv' in os.listdir('/bbc'):
+        finbert_table = pd.read_csv('/bbc/demo/' + company + '.csv', sep='\t')
+        print(finbert_table)
+        finbert_array = []
+#         finbert_columns = finbert_table.columns.to_list()
+#         finbert_array.append(finbert_columns)
+        for index, row in finbert_table.iterrows():
+            finbert_array.append(row.to_list())
+        finbert_table = finbert_array
+        print(finbert_table)
 
-    return render_template('demo.html', moose = company.upper(), dict = dict, sorted_stocks=sorted_stocks)
+    return render_template(template, moose = company.upper(), dict = dict, sorted_stocks=sorted_stocks, finbert_table=finbert_table)
 
 
 
@@ -55,7 +69,8 @@ class ReusableForm(Form):
     @app.route("/home", methods=['GET', 'POST'])
     def hello():
         sorted_stocks = get_sorted_stocks()
-        company = sorted_stocks[0][0]
+#         company = sorted_stocks[0][0]
+        company = 'FB'
         company = company.upper()
         table = pd.read_csv('demo/'+company+'.csv', sep='\t')
         array = []
@@ -71,8 +86,15 @@ class ReusableForm(Form):
         if request.method == 'POST':
             company = request.form['name']
             return s(sorted_stocks, company=company)
-        
-        return render_template('demo.html', moose = company.upper(), dict = dict, sorted_stocks = sorted_stocks)
+        finbert_table = pd.read_csv('/bbc/demo/FB.csv', sep='\t', header=None)
+        finbert_array = []
+#         finbert_columns = finbert_table.columns.to_list()
+#         finbert_array.append(finbert_columns)
+        for index, row in finbert_table.iterrows():
+          finbert_array.append(row.to_list())
+        finbert_table = finbert_array
+
+        return render_template('demo_with_finbert.html', moose = company.upper(), dict = dict, sorted_stocks = sorted_stocks, finbert_table=finbert_table)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
